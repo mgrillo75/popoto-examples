@@ -68,15 +68,6 @@
             stroke-width: 49px;
             stroke: #b30000;
         }
-
-        /* Adjust text size to fit within nodes and enable text wrapping */
-        .ppt-node-text {
-            font-size: 10px; /* Adjust the font size as needed */
-            text-anchor: middle;
-            alignment-baseline: central;
-            dominant-baseline: middle;
-            white-space: pre-wrap;
-        }
     </style>
 </head>
 <body class="ppt-body">
@@ -147,7 +138,7 @@
             constraintAttribute: "AccountCode",
             autoExpandRelations: true,
             "getDisplayType": function (node) {
-                return popoto.provider.node.DisplayTypes.TEXT;
+                return popoto.provider.node.DisplayTypes.IMAGE;
             }
         },
         "Product": {
@@ -155,7 +146,7 @@
             constraintAttribute: "MfgPartNumber",
             autoExpandRelations: true,
             "getDisplayType": function (node) {
-                return popoto.provider.node.DisplayTypes.TEXT;
+                return popoto.provider.node.DisplayTypes.IMAGE;
             },
             "getSize": function (node) {
                 if (node.type === popoto.graph.node.NodeTypes.VALUE) {
@@ -175,9 +166,6 @@
                 }
 
                 return 50;
-            },
-            "label": function (node) {
-                return node.attributes.LongDescription;
             }
         },
         "Order": {
@@ -185,14 +173,14 @@
             constraintAttribute: "SalesOrderNumber",
             autoExpandRelations: true,
             "getDisplayType": function (node) {
-                return popoto.provider.node.DisplayTypes.TEXT;
+                return popoto.provider.node.DisplayTypes.IMAGE;
             }
         },
         "Supplier": {
             returnAttributes: ["NAME", "City", "WebSiteURL", "Country", "Zip", "ContactName", "VendorID", "Fax", "State", "ADDR1", "ContactTitle", "Phone"],
             constraintAttribute: "VendorID",
             "getDisplayType": function (node) {
-                return popoto.provider.node.DisplayTypes.TEXT;
+                return popoto.provider.node.DisplayTypes.IMAGE;
             }
         },
         "Category": {
@@ -200,8 +188,9 @@
             constraintAttribute: "CategoryId",
             autoExpandRelations: true,
             "getDisplayType": function (node) {
-                return popoto.provider.node.DisplayTypes.TEXT;
+                return popoto.provider.node.DisplayTypes.IMAGE;
             }
+
         }
     };
 
@@ -211,7 +200,7 @@
      *
      * @param relations the list of relations data.
      * @return {string} the total amount.
-     */
+    
 
     function relationsAmount(relations) {
         return relations.reduce(function (a, rel) {
@@ -221,9 +210,10 @@
             return (a + relAmount - relDiscount);
         }, 0).toFixed(2);
     }
+         */
 
-        // Popoto links provider configuration
-        popoto.provider.link.Provider = {
+    // Popoto links provider configuration
+    popoto.provider.link.Provider = {
 
         // Text displayed on links
         "getTextValue": function (link) {
@@ -274,3 +264,4 @@
 </body>
 </html>
 
+       
