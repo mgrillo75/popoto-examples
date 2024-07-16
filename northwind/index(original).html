@@ -113,8 +113,8 @@
      * Create neo4j driver
      */
     var driver = neo4j.driver(
-        "neo4j+s://439acb74.databases.neo4j.io",
-        neo4j.auth.basic("neo4j", "tMOim4b9sT37cevZ4zpIV4rYXY2TXrcDI5H-tFYiobI"),
+        "neo4j+s://dff437fa.databases.neo4j.io",
+        neo4j.auth.basic("popoto", "popotopassword"),
         {disableLosslessIntegers: true}
     );
 
@@ -134,16 +134,16 @@
     // Popoto nodes provider configuration
     popoto.provider.node.Provider = {
         "Customer": {
-            returnAttributes: ["AccountCode", "BillToName", "ContactName", "ContactTitle", "ShipToAddress1", "ShipToCity", "ShipToState", "ShipToZipcode", "ShipToCountry", "ContactPhone"],
-            constraintAttribute: "AccountCode",
+            returnAttributes: ["companyName", "customerID", "city", "country", "postalCode", "contactName", "fax", "region", "address", "contactTitle", "phone"],
+            constraintAttribute: "customerID",
             autoExpandRelations: true,
             "getDisplayType": function (node) {
                 return popoto.provider.node.DisplayTypes.IMAGE;
             }
         },
         "Product": {
-            returnAttributes: ["LongDescription", "CategoryId", "ProductLifeCycleDescription", "OnOrder", "BoxQuantity", "ReorderPoint", "VendorID", "Available", "MfgPartNumber", "List"],
-            constraintAttribute: "MfgPartNumber",
+            returnAttributes: ["productName", "categoryID", "discontinued", "unitsOnOrder", "quantityPerUnit", "reorderLevel", "supplierID", "unitsInStock", "productID", "unitPrice"],
+            constraintAttribute: "productID",
             autoExpandRelations: true,
             "getDisplayType": function (node) {
                 return popoto.provider.node.DisplayTypes.IMAGE;
@@ -169,23 +169,23 @@
             }
         },
         "Order": {
-            returnAttributes: ["ShipToName", "AccountCode", "SalesOrderNumber", "OrderDate", "ShipToAddress1", "ShipToState", "Freight", "ShipToCity", "ShipToCountry", "ODSalesPerson", "ShippedDate", "NeedDate", "ShipToZipcode", "ShipVia"],
-            constraintAttribute: "SalesOrderNumber",
+            returnAttributes: ["shipName", "customerID", "orderID", "orderDate", "shipAddress", "shipRegion", "freight", "shipCity", "shipCountry", "employeeID", "shippedDate", "requiredDate", "shipPostalCode", "shipVia"],
+            constraintAttribute: "orderID",
             autoExpandRelations: true,
             "getDisplayType": function (node) {
                 return popoto.provider.node.DisplayTypes.IMAGE;
             }
         },
         "Supplier": {
-            returnAttributes: ["NAME", "City", "WebSiteURL", "Country", "Zip", "ContactName", "VendorID", "Fax", "State", "ADDR1", "ContactTitle", "Phone"],
-            constraintAttribute: "VendorID",
+            returnAttributes: ["companyName", "city", "homePage", "country", "postalCode", "contactName", "supplierID", "fax", "region", "address", "contactTitle", "phone"],
+            constraintAttribute: "supplierID",
             "getDisplayType": function (node) {
                 return popoto.provider.node.DisplayTypes.IMAGE;
             }
         },
         "Category": {
-            returnAttributes: ["Name", "CategoryId", "NamePath"],
-            constraintAttribute: "CategoryId",
+            returnAttributes: ["categoryName", "categoryID", "description"],
+            constraintAttribute: "categoryID",
             autoExpandRelations: true,
             "getDisplayType": function (node) {
                 return popoto.provider.node.DisplayTypes.IMAGE;
@@ -200,8 +200,7 @@
      *
      * @param relations the list of relations data.
      * @return {string} the total amount.
-    
-
+     */
     function relationsAmount(relations) {
         return relations.reduce(function (a, rel) {
             var relAmount = rel.properties.quantity * parseFloat(rel.properties.unitPrice);
@@ -210,7 +209,6 @@
             return (a + relAmount - relDiscount);
         }, 0).toFixed(2);
     }
-         */
 
     // Popoto links provider configuration
     popoto.provider.link.Provider = {
