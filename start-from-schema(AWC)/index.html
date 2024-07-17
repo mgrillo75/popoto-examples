@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <title>Start from schema</title>
+    <link rel="icon" href="../favicon.ico"/>
+
+    <!-- Add Popoto default CSS styles -->
+    <link rel="stylesheet" href="../node_modules/popoto/dist/popoto.min.css">
+    <link rel="stylesheet" href="../shared.css">
+</head>
+<body class="ppt-body">
+
+<section class="ppt-section-main">
+    <div class="ppt-section-header">
+        <span class="ppt-header-span">Graph</span> search
+    </div>
+
+    <div class="ppt-container-graph">
+        <nav id="popoto-taxonomy" class="ppt-taxo-nav">
+            <!-- Label/taxonomy filter will be generated here -->
+        </nav>
+        <div id="popoto-graph" class="ppt-div-graph">
+            <!-- Graph will be generated here-->
+        </div>
+    </div>
+
+    <div id="popoto-query" class="ppt-container-query">
+        <!-- Query viewer will be generated here -->
+    </div>
+
+    <div id="popoto-cypher" class="ppt-container-cypher">
+        <!-- Cypher query viewer will be generated here -->
+    </div>
+
+    <div class="ppt-section-header">
+        <!-- The total results count is updated with a listener defined below -->
+        RESULTS <span id="result-total-count" class="ppt-count"></span>
+    </div>
+
+    <div id="popoto-results" class="ppt-container-results">
+        <!-- Results will be generated here -->
+    </div>
+
+</section>
+
+<!-- Required scripts -->
+<script src="../shared.js" charset="utf-8"></script>
+<script src="../node_modules/d3/dist/d3.min.js" charset="utf-8"></script>
+<script src="../node_modules/neo4j-driver-lite/lib/browser/neo4j-lite-web.min.js" charset="utf-8"></script>
+<script src="../node_modules/popoto/dist/popoto.min.js" charset="utf-8"></script>
+<script>
+
+    var driver = neo4j.driver(
+        "neo4j+s://129a21a6.databases.neo4j.io",
+        neo4j.auth.basic("neo4j", "qUfVdrdlih4_lNEGzbaBTXoVYDN5jqBB7OmcaV_o2OU"),
+    );
+
+    popoto.runner.DRIVER = driver
+
+    /**
+     * Define the Label provider you need for your application.
+     * This configuration is mandatory and should contain at least all the labels you could find in your graph model.
+     *
+     * In this version only nodes with a label are supported.
+     *
+     * By default If no attributes are specified Neo4j internal ID will be used.
+     * These label provider configuration can be used to customize the node display in the graph.
+     * See www.popotojs.com or example for more details on available configuration options.
+     */
+    popoto.provider.node.Provider = {
+        "Customer": {
+            "returnAttributes": ["BillToName", "AccountCode"],
+            "constraintAttribute": "BillToName"
+        },
+        "Category": {
+            "returnAttributes": ["Name", "CategoryId"],
+            "constraintAttribute": "Name"
+        }
+    };
+
+    /**
+     * Here a listener is used to retrieve the total results count and update the page accordingly.
+     * This listener will be called on every graph modification.
+     */
+    popoto.result.onTotalResultCount(function (count) {
+        document.getElementById("result-total-count").innerHTML = "(" + count + ")";
+    });
+
+    var schema = {
+        label: "Customer",
+        rel: [
+            {
+                label: "USES",
+                target: {
+                    label: "Category",
+                    value: {
+                        Name: "Programmable Logic Controllers (PLC)"
+                    }
+                }
+            },
+            {
+                label: "USES",
+                target: {
+                    label: "Category",
+                    value: {
+                        title: "Enclosures"
+                    }
+                }
+            }
+        ]
+    };
+
+    driver.verifyConnectivity().then(function () {
+        popoto.start(schema);
+    }).catch(function (error) {
+        document.getElementById("modal").style.display = "block";
+        document.getElementById("error-content").innerText = error;
+        console.error(error)
+    })
+
+</script>
+</body>
+</html>
