@@ -71,7 +71,7 @@
 
         /* Adjust text size to fit within nodes and enable text wrapping */
         .ppt-node-text {
-            font-size: 10px;
+            font-size: 10px; /* Adjust the font size as needed */
             text-anchor: middle;
             alignment-baseline: central;
             dominant-baseline: middle;
@@ -106,7 +106,7 @@
 <footer class="ppt-section-header">
 
     Icons made by <a href="https://www.flaticon.com/authors/vectors-market" title="Vectors Market">Vectors
-    Market</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> licensed by 
+    Market</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> licensed by <a
         href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0
     BY</a>
 </footer>
@@ -127,7 +127,7 @@
         {disableLosslessIntegers: true}
     );
 
-    popoto.runner.DRIVER = driver
+    popoto.runner.DRIVER = driver;
 
     // If set to true, the relations properties will be returned.
     popoto.query.COLLECT_RELATIONS_WITH_VALUES = true;
@@ -222,8 +222,8 @@
         }, 0).toFixed(2);
     }
 
-        // Popoto links provider configuration
-        popoto.provider.link.Provider = {
+    // Popoto links provider configuration
+    popoto.provider.link.Provider = {
 
         // Text displayed on links
         "getTextValue": function (link) {
@@ -246,10 +246,10 @@
             return popoto.provider.link.DEFAULT_PROVIDER.getCSSClass(link, element);
         }
 
-        };
+    };
 
-        // Popoto taxonomies provider configuration
-        popoto.provider.taxonomy.Provider = {
+    // Popoto taxonomies provider configuration
+    popoto.provider.taxonomy.Provider = {
         "getCSSClass": function (label, element) {
             var labelAsCSSName = label.replace(/[^0-9a-z\-_]/gi, '');
 
@@ -257,19 +257,33 @@
 
             return cssClass + " " + labelAsCSSName;
         }
-        };
+    };
 
-        popoto.result.onTotalResultCount(function (count) {
+    popoto.result.onTotalResultCount(function (count) {
         document.getElementById("result-total-count").innerHTML = "(" + count + ")";
-        });
+    });
 
-        driver.verifyConnectivity().then(function () {
+    driver.verifyConnectivity().then(function () {
         popoto.start("Customer");
-        }).catch(function (error) {
+
+        popoto.graph.on("graphUpdated", function () {
+            // Get all Customer nodes
+            var customers = d3.selectAll(".ppt-node.Customer");
+            
+            // Reposition nodes
+            customers.attr("transform", function (d, i) {
+                return "translate(" + (i * 150) + ",100)";
+            });
+
+            // Update links after nodes are positioned
+            popoto.graph.link.display.updatePositions();
+        });
+        
+    }).catch(function (error) {
         document.getElementById("modal").style.display = "block";
         document.getElementById("error-content").innerText = error;
         console.error(error)
-        });
+    });
 </script>
 </body>
 </html>
