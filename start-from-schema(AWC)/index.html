@@ -90,26 +90,16 @@
 
     var schema = {
         label: "Customer",
-        rel: [
-            {
-                label: "USES",
-                target: {
-                    label: "Category",
-                    value: {
-                        Name: "Programmable Logic Controllers (PLC)"
+            value: {
+                        BillToName: "Electro-Tech  (1ELHUHO)"
                     }
-                }
-            },
-            {
-                label: "USES",
-                target: {
-                    label: "Category",
-                    value: {
-                        title: "Enclosures"
+    };
+
+    var schema2 = {
+        label: "Customer",
+            value: {
+                        BillToName: "Evolution (1EVWSHO)"
                     }
-                }
-            }
-        ]
     };
 
     driver.verifyConnectivity().then(function () {
