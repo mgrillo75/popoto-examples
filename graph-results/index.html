@@ -65,9 +65,9 @@
 <script src="../node_modules/vis/dist/vis-network.min.js" charset="utf-8"></script>
 <script>
 
-    var driver = neo4j.driver(
-        "neo4j+s://dff437fa.databases.neo4j.io",
-        neo4j.auth.basic("popoto", "popotopassword"),
+    const driver = neo4j.driver(
+         "neo4j+s://129a21a6.databases.neo4j.io", // Your Neo4j instance URL
+        neo4j.auth.basic("neo4j", "qUfVdrdlih4_lNEGzbaBTXoVYDN5jqBB7OmcaV_o2OU") // Your credentials
     );
 
     popoto.runner.DRIVER = driver

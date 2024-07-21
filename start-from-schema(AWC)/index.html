@@ -1,115 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-    <title>Start from schema</title>
-    <link rel="icon" href="../favicon.ico"/>
-
-    <!-- Add Popoto default CSS styles -->
-    <link rel="stylesheet" href="../node_modules/popoto/dist/popoto.min.css">
-    <link rel="stylesheet" href="../shared.css">
-</head>
-<body class="ppt-body">
-
-<section class="ppt-section-main">
-    <div class="ppt-section-header">
-        <span class="ppt-header-span">Graph</span> search
-    </div>
-
-    <div class="ppt-container-graph">
-        <nav id="popoto-taxonomy" class="ppt-taxo-nav">
-            <!-- Label/taxonomy filter will be generated here -->
-        </nav>
-        <div id="popoto-graph" class="ppt-div-graph">
-            <!-- Graph will be generated here-->
-        </div>
-    </div>
-
-    <div id="popoto-query" class="ppt-container-query">
-        <!-- Query viewer will be generated here -->
-    </div>
-
-    <div id="popoto-cypher" class="ppt-container-cypher">
-        <!-- Cypher query viewer will be generated here -->
-    </div>
-
-    <div class="ppt-section-header">
-        <!-- The total results count is updated with a listener defined below -->
-        RESULTS <span id="result-total-count" class="ppt-count"></span>
-    </div>
-
-    <div id="popoto-results" class="ppt-container-results">
-        <!-- Results will be generated here -->
-    </div>
-
-</section>
-
-<!-- Required scripts -->
-<script src="../shared.js" charset="utf-8"></script>
-<script src="../node_modules/d3/dist/d3.min.js" charset="utf-8"></script>
-<script src="../node_modules/neo4j-driver-lite/lib/browser/neo4j-lite-web.min.js" charset="utf-8"></script>
-<script src="../node_modules/popoto/dist/popoto.min.js" charset="utf-8"></script>
-<script>
-
-    var driver = neo4j.driver(
-        "neo4j+s://129a21a6.databases.neo4j.io",
-        neo4j.auth.basic("neo4j", "qUfVdrdlih4_lNEGzbaBTXoVYDN5jqBB7OmcaV_o2OU"),
-    );
-
-    popoto.runner.DRIVER = driver
-
-    /**
-     * Define the Label provider you need for your application.
-     * This configuration is mandatory and should contain at least all the labels you could find in your graph model.
-     *
-     * In this version only nodes with a label are supported.
-     *
-     * By default If no attributes are specified Neo4j internal ID will be used.
-     * These label provider configuration can be used to customize the node display in the graph.
-     * See www.popotojs.com or example for more details on available configuration options.
-     */
-    popoto.provider.node.Provider = {
-        "Customer": {
-            "returnAttributes": ["BillToName", "AccountCode"],
-            "constraintAttribute": "BillToName"
-        },
-        "Category": {
-            "returnAttributes": ["Name", "CategoryId"],
-            "constraintAttribute": "Name"
+    <meta charset="UTF-8">
+    <title>Popoto.js Two Customers Example</title>
+    <link rel="stylesheet" href="https://unpkg.com/popoto/dist/popoto.min.css">
+    <style>
+        .graph-container {
+            height: 600px;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
         }
-    };
+    </style>
+</head>
+<body>
+    <div id="popoto-graph1" class="graph-container"></div>
+    <div id="popoto-graph2" class="graph-container"></div>
 
-    /**
-     * Here a listener is used to retrieve the total results count and update the page accordingly.
-     * This listener will be called on every graph modification.
-     */
-    popoto.result.onTotalResultCount(function (count) {
-        document.getElementById("result-total-count").innerHTML = "(" + count + ")";
-    });
+    <script src="https://unpkg.com/d3@5.16.0/dist/d3.min.js"></script>
+    <script src="https://unpkg.com/popoto"></script>
+    <script src="https://unpkg.com/neo4j-driver"></script>
+    <script>
+        // Configure Neo4j database connection with your credentials
+        const driver = neo4j.driver(
+            "neo4j+s://129a21a6.databases.neo4j.io",
+            neo4j.auth.basic("neo4j", "qUfVdrdlih4_lNEGzbaBTXoVYDN5jqBB7OmcaV_o2OU")
+        );
 
-    var schema = {
-        label: "Customer",
-            value: {
-                        BillToName: "Electro-Tech  (1ELHUHO)"
-                    }
-    };
+        function initializeGraph(containerId, label, value) {
+            const instance = {...popoto};  // Create a new instance of Popoto.js
 
-    var schema2 = {
-        label: "Customer",
-            value: {
-                        BillToName: "Evolution (1EVWSHO)"
-                    }
-    };
+            instance.graph.containerId = containerId;
+            instance.runner.DRIVER = driver;
 
-    driver.verifyConnectivity().then(function () {
-        popoto.start(schema);
-    }).catch(function (error) {
-        document.getElementById("modal").style.display = "block";
-        document.getElementById("error-content").innerText = error;
-        console.error(error)
-    })
+            instance.provider.node.Provider = {
+                "Customer": {
+                    "returnAttributes": ["BillToName", "AccountCode"],
+                    "constraintAttribute": "BillToName"
+                }
+            };
 
-</script>
+            instance.start(label);
+            setTimeout(() => {
+                instance.graph.addSchema({label, value});
+            }, 1000);
+        }
+
+        driver.verifyConnectivity().then(() => {
+            initializeGraph("popoto-graph1", "Customer", {BillToName: "Electro-Tech (1ELHUHO)"});
+            initializeGraph("popoto-graph2", "Customer", {BillToName: "Evolution (1EVWSHO)"});
+        }).catch((error) => {
+            console.error('Neo4j driver connection error:', error);
+            alert('Failed to connect to Neo4j. Please check the console for more details.');
+        });
+    </script>
 </body>
 </html>

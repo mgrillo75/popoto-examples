@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Popoto Dual Graphs Example</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/popoto@1.7.3/dist/popoto.min.css">
+    <style>
+        #popoto1, #popoto2 {
+            width: 45%;
+            height: 500px;
+            display: inline-block;
+            vertical-align: top;
+        }
+    </style>
+</head>
+<body>
+    <div id="popoto1"></div>
+    <div id="popoto2"></div>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log("DOM fully loaded and parsed");
+            console.log("Checking if D3 is defined:", typeof d3);
+
+            if (typeof d3 !== 'undefined') {
+                var script = document.createElement('script');
+                script.src = "https://cdn.jsdelivr.net/npm/popoto@1.7.3/dist/popoto.min.js";
+                script.onload = function() {
+                    console.log("Popoto library loaded successfully");
+                    initializePopoto();
+                };
+                script.onerror = function() {
+                    console.error("Failed to load Popoto library");
+                };
+                document.head.appendChild(script);
+            } else {
+                console.error("D3 library failed to load.");
+            }
+        });
+
+        function initializePopoto() {
+            console.log("Checking if Popoto is defined:", typeof popoto);
+            if (typeof popoto !== 'undefined') {
+                console.log("Popoto is defined, initializing graphs");
+
+                // Initialize the first graph
+                popoto.start({
+                    containerSelector: "#popoto1",
+                    neo4j: {
+                        url: "neo4j+s://129a21a6.databases.neo4j.io",
+                        user: "neo4j",
+                        password: "qUfVdrdlih4_lNEGzbaBTXoVYDN5jqBB7OmcaV_o2OU"
+                    }
+                });
+
+                // Initialize the second graph
+                popoto.start({
+                    containerSelector: "#popoto2",
+                    neo4j: {
+                        url: "neo4j+s://129a21a6.databases.neo4j.io",
+                        user: "neo4j",
+                        password: "qUfVdrdlih4_lNEGzbaBTXoVYDN5jqBB7OmcaV_o2OU"
+                    }
+                });
+            } else {
+                console.error("Popoto library failed to load.");
+            }
+        }
+    </script>
+</body>
+</html>

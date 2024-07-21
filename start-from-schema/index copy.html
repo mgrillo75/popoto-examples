@@ -53,12 +53,22 @@
 <script>
 
     var driver = neo4j.driver(
-        "neo4j+s://129a21a6.databases.neo4j.io",
-        neo4j.auth.basic("neo4j", "qUfVdrdlih4_lNEGzbaBTXoVYDN5jqBB7OmcaV_o2OU"),
+        "neo4j+s://dff437fa.databases.neo4j.io",
+        neo4j.auth.basic("popoto", "popotopassword"),
     );
 
-    popoto.runner.DRIVER = driver;
+    popoto.runner.DRIVER = driver
 
+    /**
+     * Define the Label provider you need for your application.
+     * This configuration is mandatory and should contain at least all the labels you could find in your graph model.
+     *
+     * In this version only nodes with a label are supported.
+     *
+     * By default If no attributes are specified Neo4j internal ID will be used.
+     * These label provider configuration can be used to customize the node display in the graph.
+     * See www.popotojs.com or example for more details on available configuration options.
+     */
     popoto.provider.node.Provider = {
         "Person": {
             "returnAttributes": ["name", "born"],
@@ -70,11 +80,15 @@
         }
     };
 
+    /**
+     * Here a listener is used to retrieve the total results count and update the page accordingly.
+     * This listener will be called on every graph modification.
+     */
     popoto.result.onTotalResultCount(function (count) {
         document.getElementById("result-total-count").innerHTML = "(" + count + ")";
     });
 
-    var schema1 = {
+    var schema = {
         label: "Person",
         rel: [
             {
@@ -98,58 +112,13 @@
         ]
     };
 
-    var schema2 = {
-        label: "Person",
-        rel: [
-            {
-                label: "ACTED_IN",
-                target: {
-                    label: "Movie",
-                    value: {
-                        title: "Rain Man"
-                    }
-                }
-            },
-            {
-                label: "ACTED_IN",
-                target: {
-                    label: "Movie",
-                    value: {
-                        title: "Mission Impossible"
-                    }
-                }
-            }
-        ]
-    };
-
-    function startPopotoWithMultipleNodes() {
-        // Start with the first schema
-        popoto.start(schema1);
-
-        // Delay to allow the first schema to initialize
-        setTimeout(function () {
-            // Create a second person node
-            var secondNode = popoto.graph.node.createNode("Person", {});
-
-            // Create relationships for the second person node
-            popoto.graph.node.addRelationship(popoto.graph.node.nodes[1], secondNode, "KNOWS");
-            
-            // Add the ACTED_IN relationships for the second node
-            popoto.graph.node.addRelationship(secondNode, popoto.graph.node.createNode("Movie", {title: "Rain Man"}), "ACTED_IN");
-            popoto.graph.node.addRelationship(secondNode, popoto.graph.node.createNode("Movie", {title: "Mission Impossible"}), "ACTED_IN");
-
-            // Update the force layout to accommodate the new nodes and relationships
-            popoto.graph.node.createForceLayout();
-        }, 1000); // Adjust the delay as needed
-    }
-
     driver.verifyConnectivity().then(function () {
-        startPopotoWithMultipleNodes();
+        popoto.start(schema);
     }).catch(function (error) {
         document.getElementById("modal").style.display = "block";
         document.getElementById("error-content").innerText = error;
         console.error(error)
-    });
+    })
 
 </script>
 </body>

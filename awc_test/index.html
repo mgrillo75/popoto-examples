@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
     <title>Multiple selection</title>
@@ -10,14 +9,11 @@
     <link rel="stylesheet" href="../node_modules/popoto/dist/popoto.min.css">
     <link rel="stylesheet" href="../shared.css">
 </head>
-
 <body class="ppt-body">
-
 <section class="ppt-section-main">
     <div class="ppt-section-header">
         <span class="ppt-header-span">Multiple selection</span>
     </div>
-
     <div class="ppt-container-graph">
         <nav id="popoto-taxonomy" class="ppt-taxo-nav">
             <!-- Label/taxonomy filter will be generated here -->
@@ -26,24 +22,19 @@
             <!-- Graph will be generated here-->
         </div>
     </div>
-
     <div id="popoto-query" class="ppt-container-query">
         <!-- Query viewer will be generated here -->
     </div>
-
     <div id="popoto-cypher" class="ppt-container-cypher">
         <!-- Cypher query viewer will be generated here -->
     </div>
-
     <div class="ppt-section-header">
         <!-- The total results count is updated with a listener defined below -->
         RESULTS <span id="result-total-count" class="ppt-count"></span>
     </div>
-
     <div id="popoto-results" class="ppt-container-results">
         <!-- Results will be generated here -->
     </div>
-
 </section>
 
 <!-- Required scripts -->
@@ -60,6 +51,8 @@
 
     popoto.runner.DRIVER = driver
 
+    popoto.graph.USE_FIT_TEXT = true;
+
     /**
      * Define the Label provider you need for your application.
      * This configuration is mandatory and should contain at least all the labels you could find in your graph model.
@@ -71,13 +64,9 @@
      * See www.popotojs.com or example for more details on available configuration options.
      */
     popoto.provider.node.Provider = {
-        "Person": {
-            "returnAttributes": ["name", "born"],
-            "constraintAttribute": "name"
-        },
-        "Movie": {
-            "returnAttributes": ["title", "released", "tagline", "multiple"],
-            "constraintAttribute": "title"
+        "Customer": {
+            "returnAttributes": ["BillToName", "AccountCode"],
+            "constraintAttribute": "AccountCode"
         }
     };
 
@@ -91,11 +80,13 @@
 
     driver.verifyConnectivity().then(function () {
         /**
-         * Start popoto.js generation.
+         * Start popoto.js generation with undirected option.
          */
         popoto.start({
-            label: "Person",
-            value: [{name: "Keanu Reeves"}, {name: "Tom Cruise"}]
+            label: "Customer",
+            value: [{BillToName: "Dynamis Power Solutions"}]
+        }, {
+            directed: false
         });
     }).catch(function (error) {
         document.getElementById("modal").style.display = "block";

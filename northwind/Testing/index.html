@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Popoto Example</title>
+    <link rel="stylesheet" href="https://unpkg.com/popoto@3.0.0/dist/popoto.min.css">
+    <style>
+        .ppt-body {
+            font-family: Arial, sans-serif;
+        }
+        .ppt-section-main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .ppt-container-graph, .ppt-container-results {
+            width: 80%;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body class="ppt-body">
+    <section class="ppt-section-main">
+        <nav id="popoto-taxonomy" class="ppt-taxo-nav"></nav>
+        <div id="popoto-graph" class="ppt-div-graph"></div>
+        <div id="popoto-query" class="ppt-container-query"></div>
+        <div id="popoto-cypher" class="ppt-container-cypher"></div>
+        <div class="ppt-section-header">RESULTS <span id="result-total-count" class="ppt-count"></span></div>
+        <div id="popoto-results" class="ppt-container-results"></div>
+    </section>
+
+    <!-- Required scripts -->
+    <script src="https://unpkg.com/neo4j-driver@4.4.3/lib/browser/neo4j-web.min.js"></script>
+    <script src="https://unpkg.com/popoto@3.0.0/dist/popoto.min.js"></script>
+    <script>
+        // Create the Neo4j driver to use in Popoto query runner
+        const driver = neo4j.driver(
+            "neo4j+s://129a21a6.databases.neo4j.io", // Your Neo4j instance URL
+            neo4j.auth.basic("neo4j", "qUfVdrdlih4_lNEGzbaBTXoVYDN5jqBB7OmcaV_o2OU") // Your credentials
+        );
+
+        driver.verifyConnectivity().then(function() {
+            // Set the driver to Popoto's query runner
+            popoto.runner.DRIVER = driver;
+
+            // Define the node provider configuration
+            popoto.provider.node.Provider = {
+                "Customer": {
+                    "returnAttributes": ["BillToName", "ShipToAddress1", "ShipToCity", "ShipToState", "ShipToZipcode"],
+                    "constraintAttribute": "BillToName",
+                    "autoExpandRelations": false,
+                    "predefinedConstraints": {
+                        "Customer": "c.BillToName IN ['Accelerated Mobile Power', 'Dynamis Power Solutions', 'Evolution Well Services']"
+                    }
+                }
+            };
+
+            // Set the number of results returned per query
+            popoto.query.RESULTS_PAGE_SIZE = 100;
+
+            // Activate debug traces for the console
+            popoto.logger.LEVEL = popoto.logger.LogLevels.INFO;
+
+            // Start Popoto.js generation
+            popoto.start("Customer");
+
+            // Listener to update the total results count
+            popoto.result.onTotalResultCount(function (count) {
+                document.getElementById("result-total-count").innerHTML = "(" + count + ")";
+            });
+        }).catch(function(error) {
+            console.error("Neo4j connection error:", error);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+import React, { useEffect, useRef } from 'react';
+import * as neo4j from 'neo4j-driver';
+import * as popoto from 'popoto';
+
+const PopotoGraph = ({ containerId, rootLabel, driver }) => {
+  const graphRef = useRef(null);
+
+  useEffect(() => {
+    if (graphRef.current) {
+      const popotoInstance = Object.create(popoto);
+      
+      popotoInstance.graph.containerId = containerId;
+      popotoInstance.graph.GRAPH_CONTAINER_ID = containerId;
+      popotoInstance.runner.DRIVER = driver;
+
+      popotoInstance.provider.node.Provider = {
+        "Movie": {
+          "returnAttributes": ["title", "released"],
+          "constraintAttribute": "title"
+        },
+        "Person": {
+          "returnAttributes": ["name", "born"],
+          "constraintAttribute": "name"
+        }
+      };
+
+      popotoInstance.start(rootLabel);
+
+      return () => {
+        // Cleanup logic if needed
+      };
+    }
+  }, [containerId, rootLabel, driver]);
+
+  return <div id={containerId} ref={graphRef} style={{ width: '100%', height: '400px' }} />;
+};
+
+const DualPopotoGraphs = () => {
+  const driver = neo4j.driver(
+    "neo4j+s://129a21a6.databases.neo4j.io",
+    neo4j.auth.basic("neo4j", "qUfVdrdlih4_lNEGzbaBTXoVYDN5jqBB7OmcaV_o2OU")
+  );
+
+  useEffect(() => {
+    return () => {
+      driver.close();
+    };
+  }, []);
+
+  return (
+    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <div style={{ width: '48%' }}>
+        <h2>Movie Graph</h2>
+        <PopotoGraph containerId="popoto-graph1" rootLabel="Movie" driver={driver} />
+      </div>
+      <div style={{ width: '48%' }}>
+        <h2>Person Graph</h2>
+        <PopotoGraph containerId="popoto-graph2" rootLabel="Person" driver={driver} />
+      </div>
+    </div>
+  );
+};
+
+export default DualPopotoGraphs;

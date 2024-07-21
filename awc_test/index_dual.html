@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <title>Customer Graph</title>
+    <link rel="icon" href="../favicon.ico"/>
+
+    <!-- Add Popoto default CSS styles -->
+    <link rel="stylesheet" href="../node_modules/popoto/dist/popoto.min.css">
+    <link rel="stylesheet" href="../shared.css">
+
+    <style>
+        .ppt-div-graph {
+            height: 50%;
+        }
+    </style>
+</head>
+<body class="ppt-body">
+
+<section class="ppt-section-main" style="height: 700px">
+    <div class="ppt-section-header">
+        <span class="ppt-header-span">Customer Graph -</span> Results example
+    </div>
+
+    <div id="popoto-graph" class="ppt-div-graph">
+        <!-- Graph is generated here-->
+    </div>
+
+    <div id="popoto-cypher" class="ppt-container-query">
+        <!-- Query viewer is generated here -->
+    </div>
+
+    <!-- Add a header with total number of results count -->
+    <div class="ppt-section-header">
+        RESULTS <span id="rescount" class="ppt-count"></span>
+    </div>
+
+    <div id="popoto-results" class="ppt-container-results">
+        <!-- Results are generated here -->
+    </div>
+
+</section>
+
+<!-- Required scripts -->
+<script src="../shared.js" charset="utf-8"></script>
+<script src="../node_modules/d3/dist/d3.min.js" charset="utf-8"></script>
+<script src="../node_modules/neo4j-driver-lite/lib/browser/neo4j-lite-web.min.js" charset="utf-8"></script>
+<script src="../node_modules/popoto/dist/popoto.min.js" charset="utf-8"></script>
+<script>
+
+    const driver = neo4j.driver(
+        "neo4j+s://129a21a6.databases.neo4j.io",
+        neo4j.auth.basic("neo4j", "qUfVdrdlih4_lNEGzbaBTXoVYDN5jqBB7OmcaV_o2OU")
+    );
+
+    popoto.runner.DRIVER = driver;
+
+    const customSchema = {
+        nodes: [
+            {
+                id: "DynamisPowerSolutions",
+                label: "Customer",
+                properties: {
+                    BillToName: "Dynamis Power Solutions",
+                    ShipToAddress1: "15835 Kimberlee Ln",
+                    ShipToCity: "Houston",
+                    ShipToState: "TX",
+                    ShipToZipcode: "77049"
+                }
+            }
+        ],
+        links: []
+    };
+
+    popoto.start(customSchema);
+
+</script>
+</body>
+</html>

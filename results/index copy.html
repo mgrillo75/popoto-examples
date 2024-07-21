@@ -3,7 +3,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-    <title>Customer Graph - Results example</title>
+    <title>Results</title>
     <link rel="icon" href="../favicon.ico"/>
 
     <!-- Add Popoto default CSS styles -->
@@ -20,11 +20,11 @@
 
 <section class="ppt-section-main" style="height: 700px">
     <div class="ppt-section-header">
-        <span class="ppt-header-span">Customer Graph -</span> Results example
+        <span class="ppt-header-span">Neo4j movie graph -</span> Results example
     </div>
 
     <div id="popoto-graph" class="ppt-div-graph">
-        <!-- Graph is generated here -->
+        <!-- Graph is generated here-->
     </div>
 
     <div id="popoto-cypher" class="ppt-container-query">
@@ -54,53 +54,63 @@
         neo4j.auth.basic("neo4j", "qUfVdrdlih4_lNEGzbaBTXoVYDN5jqBB7OmcaV_o2OU") // Your credentials
     );
 
-    popoto.runner.DRIVER = driver;
 
-    // Define the list of label provider to customize the graph behavior
+    popoto.runner.DRIVER = driver
+
+    // Define the list of label provider to customize the graph behavior:
+    // Only two labels are used in Neo4j movie graph example: "Movie" and "Person"
     popoto.provider.node.Provider = {
-        "Customer": {
-            "returnAttributes": ["BillToName", "ShipToAddress1", "ShipToCity", "ShipToState", "ShipToZipcode"],
-            "constraintAttribute": "BillToName",
+        "Movie": {
+            "returnAttributes": ["title", "released", "tagline"],
+            "constraintAttribute": "title"
+        },
+        "Person": {
+            "returnAttributes": ["name", "born"],
+            "constraintAttribute": "name",
+            // Customize result display for Person nodes:
             "displayResults": function (pResultElmt) {
+
+                // Here D3.js mechanisms is used to generate HTML code.
+                // By default Popoto.js generates a <p> element for each result.
+                // pResultElmt parameter is the <p> element selected with D3.js
+                // So for "Person" result nodes two elements are generated:
+
+                // An <h3> element containing the person name
                 pResultElmt.append("h3")
                     .text(function (result) {
-                        return result.attributes.BillToName;
+                        return result.attributes.name;
                     });
 
+                // A <span> element with the computed age from born attribute
                 pResultElmt.filter(function (result) {
-                    return result.attributes.ShipToAddress1;
+                    // Filter on attribute having born attribute value
+                    return result.attributes.born;
                 }).append("span").text(function (result) {
-                    return "Address: " + result.attributes.ShipToAddress1 + ", " + result.attributes.ShipToCity + ", " + result.attributes.ShipToState + " " + result.attributes.ShipToZipcode;
+                    return "Age: " + (new Date().getFullYear() - result.attributes.born.toInt());
                 });
+
             }
         }
     };
 
-    popoto.query.QUERY_OBJECT = {
-        "Customer": {
-            initialCypher: `
-                MATCH (customer:Customer)
-                WHERE customer.BillToName = 'Dynamis Power Solutions'
-                RETURN customer
-            `
-        }
-    };
-
+    // Change the number of displayed results:
     popoto.result.RESULTS_PAGE_SIZE = 20;
 
+    // Add a listener on returned result count to update count in page
     popoto.result.onTotalResultCount(function (count) {
         d3.select("#rescount").text(function (d) {
             return "(" + count + ")";
-        });
+        })
     });
 
     driver.verifyConnectivity().then(function () {
-        popoto.start("Customer");
+        // Start the generation using parameter as root label of the query.
+        popoto.start("Person");
     }).catch(function (error) {
         document.getElementById("modal").style.display = "block";
         document.getElementById("error-content").innerText = error;
-        console.error(error);
-    });
+        console.error(error)
+    })
 
 </script>
 </body>
